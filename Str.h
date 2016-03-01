@@ -1,0 +1,33 @@
+
+// MT, 2016mar01
+
+#ifndef MT_STR
+#define MT_STR
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** Tries to parse double value from given position in given string
+ *  and returns a pointer to the double value.
+ *  Increments index given on success.
+ *
+ *  - Caller takes ownership of return value.
+ *  - Returns NULL, if parsing failed.
+ */
+double* Str_double_create(char const * const inStr, size_t const inLen, size_t * const inOutIndex);
+
+/** Tries to parse string starting from given position in given string
+ *  and returns a pointer to the parsed string.
+ *
+ *  - The string is expected to be enclosed in given tag characters (e.g. ..."the string to parse"...).
+ *  - The tag characters behind a '\' will be added to the output string.
+ *  - Returns NULL, if parsing failed.
+ */
+char* Str_string_create(char const * const inStr, size_t const inLen, char const inTag, size_t * const inOutIndex);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // MT_STR
