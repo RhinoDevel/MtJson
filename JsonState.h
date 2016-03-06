@@ -23,6 +23,7 @@ enum JsonState
     JsonState_number = 9,
     JsonState_string = 10,
     JsonState_null = 11,
+    JsonState_prop_begin = 12,
     JsonState_done = 99
 };
 

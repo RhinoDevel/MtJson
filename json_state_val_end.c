@@ -18,6 +18,11 @@ enum JsonState json_state_val_end(struct JsonStateInput * const inObj)
 
     if(inObj->i<inObj->len)
     {
+        if(*((char*)Stack_top(inObj->stack))=='p')
+        {
+            Stack_pop(inObj->stack);
+        }
+
         switch(inObj->str[inObj->i])
         {
             case ',':

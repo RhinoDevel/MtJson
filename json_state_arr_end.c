@@ -24,20 +24,7 @@ enum JsonState json_state_arr_end(struct JsonStateInput * const inObj)
     {
         if(inObj->i<inObj->len)
         {
-            assert(!Stack_isEmpty(inObj->stack));
-
-            switch(inObj->str[inObj->i])
-            {
-                case ',':
-                    retVal = JsonState_val_next;
-                    break;
-                case ']':
-                    retVal = JsonState_arr_end;
-                    break;
-
-                default:
-                    break;
-            }
+            retVal = JsonState_val_end;
         }
         else
         {

@@ -4,6 +4,8 @@
 #ifndef MT_STR
 #define MT_STR
 
+#include "stddef.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

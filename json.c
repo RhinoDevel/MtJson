@@ -15,6 +15,9 @@
 #include "json_state_null.h"
 #include "json_state_number.h"
 #include "json_state_string.h"
+#include "json_state_obj_begin.h"
+#include "json_state_obj_end.h"
+#include "json_state_prop_begin.h"
 #include "json.h"
 
 bool json_parse(char * const inStr, bool const inTakeOwnership)
@@ -69,7 +72,16 @@ bool json_parse(char * const inStr, bool const inTakeOwnership)
                 break;
 
             case JsonState_obj_begin:
+                state = json_state_obj_begin(obj);
+                break;
+
             case JsonState_obj_end:
+                state = json_state_obj_end(obj);
+                break;
+
+            case JsonState_prop_begin:
+                state = json_state_prop_begin(obj);
+                break;
 
             case JsonState_err:
             default:
