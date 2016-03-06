@@ -4,7 +4,7 @@
 // MT_TODO: TEST: Not 100% like JSON standard:
 //
 // - No UTF-8 / Unicode support.
-// - JSON number format is not "perfect" (formatting of floating-point numebers, no integer support).
+// - JSON number format might not be "perfect" (formatting of floating-point numbers, no integer support).
 
 #ifndef MT_JSON
 #define MT_JSON
