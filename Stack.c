@@ -7,12 +7,35 @@
 #include <string.h>
 #include <assert.h>
 #include "Stack.h"
+#include "Deb.h"
+
+#ifndef NDEBUG
+void Stack_debug_print_char(struct Stack * const inStack)
+{
+    assert(inStack!=NULL);
+
+    struct StackEle const * iter = inStack->top;
+
+    do
+    {
+        assert(iter->val!=NULL);
+        Deb_line("%c", *((char*)(iter->val)));
+
+        iter = iter->below;
+    }while(iter!=NULL);
+}
+#endif //NDEBUG
 
 void Stack_push(struct Stack * const inStack, void * const inVal)
 {
     assert(inStack!=NULL);
 
     inStack->top = StackEle_create(inVal, inStack->top);
+
+#ifndef NDEBUG
+    //Deb_line("CHAR STACK PUSH:");
+    //Stack_debug_print_char(inStack);
+#endif //NDEBUG
 }
 
 void* Stack_pop(struct Stack * const inStack)
@@ -27,6 +50,7 @@ void* Stack_pop(struct Stack * const inStack)
         inStack->top = below;
     }
 
+    //Deb_line("STACK POP.");
     return retVal;
 }
 
