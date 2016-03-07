@@ -16,7 +16,9 @@ struct JsonStateInput * JsonStateInput_create(char * const inStr, bool const inT
             .takesOwnership = inTakesOwnership,
 
             .i = 0,
-            .stack = Stack_create(true)
+            .stack = Stack_create(true),
+            .root = NULL,
+            .pos = NULL
         };
 
     assert(inStr!=NULL);
@@ -34,6 +36,10 @@ void JsonStateInput_delete(struct JsonStateInput * const inJsonStateInput)
     if(inJsonStateInput->takesOwnership)
     {
         free(inJsonStateInput->str);
+    }
+    if(inJsonStateInput->root!=NULL)
+    {
+        JsonEle_delete(inJsonStateInput->root);
     }
     Stack_delete(inJsonStateInput->stack);
     free(inJsonStateInput);

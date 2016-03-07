@@ -77,7 +77,7 @@ char* Str_string_create(char const * const inStr, size_t const inLen, char const
 
         size_t const len = terminatorPos-firstCharPos; // (without terminator)
 
-        buf = malloc(sizeof(*buf)*(len+1));
+        buf = malloc((sizeof *buf)*(len+1));
 
         assert(buf!=NULL);
 

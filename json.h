@@ -10,12 +10,14 @@
 #define MT_JSON
 
 #include <stdbool.h>
+#include "JsonEle.h"
 
 #ifdef	__cplusplus
 extern "C" {
 #endif //__cplusplus
 
-bool json_parse(char * const inStr, bool const inTakeOwnership);
+char* json_stringify(struct JsonEle * const inEle, bool const inTakeOwnership);
+struct JsonEle * json_parse(char * const inStr, bool const inTakeOwnership);
 
 #ifdef	__cplusplus
 }

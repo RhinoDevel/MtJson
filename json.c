@@ -20,12 +20,27 @@
 #include "json_state_prop_begin.h"
 #include "json.h"
 
-bool json_parse(char * const inStr, bool const inTakeOwnership)
+char* json_stringify(struct JsonEle * const inEle, bool const inTakeOwnership)
 {
-    bool retVal = false,
-        loop = true;
+    char* retVal = NULL;
+
+    assert(false); // MT_TODO: TEST: Implement!
+
+    if(inTakeOwnership)
+    {
+        JsonEle_delete(inEle);
+    }
+    return retVal;
+}
+
+struct JsonEle * json_parse(char * const inStr, bool const inTakeOwnership)
+{
+    struct JsonEle * retVal = NULL;
+    bool loop = true;
     struct JsonStateInput * const obj = JsonStateInput_create(inStr, inTakeOwnership);
     enum JsonState state = JsonState_begin;
+
+    // MT_TODO: TEST: Implement adding data to return value!
 
     do
     {
@@ -90,7 +105,8 @@ bool json_parse(char * const inStr, bool const inTakeOwnership)
 
             case JsonState_done:
                 loop = false;
-                retVal = true;
+                retVal = obj->root;
+                obj->root = NULL;
                 break;
         }
     }while(loop);

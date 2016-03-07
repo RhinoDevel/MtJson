@@ -9,6 +9,7 @@
 
 int main()
 {
+#if 0
     char /*const*/ * const testStr[] = {
        "{}",
        "[]",
@@ -41,6 +42,7 @@ int main()
     {
         printf("All %d test(-s) ran succeeded.\n", testStrCnt-startIndex);
     }
+#endif //0
 
     return EXIT_SUCCESS;
 }
