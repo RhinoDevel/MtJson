@@ -5,11 +5,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+#include "JsonEle.h"
 #include "json.h"
 
 int main()
 {
-#if 0
     char /*const*/ * const testStr[] = {
        "{}",
        "[]",
@@ -27,22 +28,30 @@ int main()
        "[{\"myArr\":[],\"myObj\":{\"subArr\":[null,false,true,0.0,-42,\"beerbarreltree\"],\"subObj\":{}}}]"
     };
     int const testStrCnt = (int)(sizeof testStr/sizeof *testStr),
-        startIndex = testStrCnt-1;
+        startIndex = 0,
+        endIndex = testStrCnt-1;
     int i = 0;
 
-    for(i = startIndex;i<testStrCnt;++i)
+    assert(endIndex>=startIndex);
+    assert(endIndex<=testStrCnt);
+
+    for(i = startIndex;i<=endIndex;++i)
     {
-        if(!json_parse(testStr[i], false))
+        struct JsonEle * const root = json_parse(testStr[i], false);
+
+        if(root==NULL)
         {
             printf("Test at index %d failed: \"%s\"!\n", i, testStr[i]);
             break;
         }
+
+        printf("Test at index %d succeeded.\n", i);
+        JsonEle_delete(root);
     }
     if(i==testStrCnt)
     {
         printf("All %d test(-s) ran succeeded.\n", testStrCnt-startIndex);
     }
-#endif //0
 
     return EXIT_SUCCESS;
 }

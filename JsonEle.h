@@ -27,7 +27,7 @@ void JsonEle_delete(struct JsonEle * const inJsonEle);
  *
  *  - Takes ownership of given value object.
  */
-struct JsonEle * JsonEle_create(enum JsonType const inType, void * const inVal);
+struct JsonEle * JsonEle_create(void * const inVal);
 
 #ifdef	__cplusplus
 }

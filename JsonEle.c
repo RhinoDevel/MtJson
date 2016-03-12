@@ -18,10 +18,11 @@ void JsonEle_delete(struct JsonEle * const inJsonEle)
         next = cur->next;
         JsonVal_delete(cur->val); // *** RECURSION (see JsonVal). ***
         free(cur);
-    }while(next!=NULL);
+        cur = next;
+    }while(cur!=NULL);
 }
 
-struct JsonEle * JsonEle_create(enum JsonType const inType, void * const inVal)
+struct JsonEle * JsonEle_create(void * const inVal)
 {
     struct JsonEle * const retVal = malloc(sizeof *retVal);
     struct JsonEle const buf = (struct JsonEle)

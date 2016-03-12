@@ -14,7 +14,7 @@ extern "C" {
 struct JsonVal
 {
     enum JsonType const type;
-    void * const val;
+    void * val;
 };
 
 /** Delete JSON value given.

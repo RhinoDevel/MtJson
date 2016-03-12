@@ -21,7 +21,7 @@ struct JsonStateInput
     size_t i;
     struct Stack * const stack;
     struct JsonEle * root;
-    struct JsonEle * pos;
+    struct JsonEle * * pos;
 };
 
 struct JsonStateInput * JsonStateInput_create(char * const inStr, bool const inTakesOwnership);

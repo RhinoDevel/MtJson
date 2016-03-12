@@ -18,9 +18,9 @@ enum JsonState json_state_val_end(struct JsonStateInput * const inObj)
 
     if(inObj->i<inObj->len)
     {
-        if(*((char*)Stack_top(inObj->stack))=='p')
+        if(((struct JsonEle *)Stack_top(inObj->stack))->val->type==JsonType_prop)
         {
-            Stack_pop(inObj->stack);
+            inObj->pos = &(((struct JsonEle *)Stack_pop(inObj->stack))->next);
         }
 
         switch(inObj->str[inObj->i])

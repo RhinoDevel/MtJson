@@ -20,17 +20,23 @@ enum JsonState json_state_arr_end(struct JsonStateInput * const inObj)
 
     void const * const pop = Stack_pop(inObj->stack);
 
-    if((pop!=NULL)&&(*((char*)pop)==']'))
+    if(pop!=NULL)
     {
-        if(inObj->i<inObj->len)
+        struct JsonEle * const container = (struct JsonEle *)pop;
+
+        if(container->val->type==JsonType_arr)
         {
-            retVal = JsonState_val_end;
-        }
-        else
-        {
-            if(Stack_isEmpty(inObj->stack))
+            if(inObj->i<inObj->len)
             {
-                retVal = JsonState_done;
+                inObj->pos = &(container->next);
+                retVal = JsonState_val_end;
+            }
+            else
+            {
+                if(Stack_isEmpty(inObj->stack))
+                {
+                    retVal = JsonState_done;
+                }
             }
         }
     }

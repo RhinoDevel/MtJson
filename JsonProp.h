@@ -4,7 +4,7 @@
 #ifndef MT_JSONPROP
 #define MT_JSONPROP
 
-#include "JsonVal.h"
+#include "JsonEle.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -13,7 +13,7 @@ extern "C" {
 struct JsonProp
 {
     char * const name;
-    struct JsonVal * const val;
+    struct JsonEle * ele;
 };
 
 /** Delete property.
@@ -26,7 +26,7 @@ void JsonProp_delete(struct JsonProp * const inJsonProp);
  *
  *  - Takes ownership of given name and JSON value.
  */
-struct JsonProp * JsonProp_create(char * const inName, struct JsonVal * const inVal);
+struct JsonProp * JsonProp_create(char * const inName);
 
 #ifdef	__cplusplus
 }

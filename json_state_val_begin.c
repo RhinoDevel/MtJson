@@ -2,6 +2,7 @@
 // MT, 2016feb29
 
 #include <assert.h>
+#include "JsonEle.h"
 #include "json_state_val_begin.h"
 
 enum JsonState json_state_val_begin(struct JsonStateInput * const inObj)
@@ -12,16 +13,18 @@ enum JsonState json_state_val_begin(struct JsonStateInput * const inObj)
     assert(inObj->i<inObj->len);
     assert(!Stack_isEmpty(inObj->stack));
 
-    switch(*((char*)Stack_top(inObj->stack)))
+    struct JsonEle * const top = (struct JsonEle *)Stack_top(inObj->stack);
+
+    switch(top->val->type)
     {
-        case '}':
+        case JsonType_obj:
             if(inObj->str[inObj->i]=='"')
             {
                 retVal = JsonState_prop_begin;
             }
             break;
-        case 'p':
-        case ']':
+        case JsonType_prop:
+        case JsonType_arr:
             switch(inObj->str[inObj->i])
             {
                 case '[':

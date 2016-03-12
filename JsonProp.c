@@ -10,24 +10,25 @@ void JsonProp_delete(struct JsonProp * const inJsonProp)
 {
     assert(inJsonProp!=NULL);
     assert(inJsonProp->name!=NULL);
-    assert(inJsonProp->val!=NULL);
 
     free(inJsonProp->name);
-    JsonVal_delete(inJsonProp->val); // *** RECURSION (see JsonVal). ***
+    if(inJsonProp->ele!=NULL)
+    {
+        JsonEle_delete(inJsonProp->ele); // *** RECURSION (see JsonEle). ***
+    }
     free(inJsonProp);
 }
 
-struct JsonProp * JsonProp_create(char * const inName, struct JsonVal * const inVal)
+struct JsonProp * JsonProp_create(char * const inName)
 {
     struct JsonProp * const retVal = malloc(sizeof *retVal);
     struct JsonProp const buf = (struct JsonProp)
     {
         .name = inName,
-        .val = inVal
+        .ele = NULL
     };
 
     assert(inName!=NULL);
-    assert(inVal!=NULL);
     assert(retVal!=NULL);
 
     memcpy(retVal, &buf, sizeof *retVal);

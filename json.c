@@ -40,8 +40,6 @@ struct JsonEle * json_parse(char * const inStr, bool const inTakeOwnership)
     struct JsonStateInput * const obj = JsonStateInput_create(inStr, inTakeOwnership);
     enum JsonState state = JsonState_begin;
 
-    // MT_TODO: TEST: Implement adding data to return value!
-
     do
     {
         switch(state)

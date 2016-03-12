@@ -16,7 +16,7 @@ struct JsonStateInput * JsonStateInput_create(char * const inStr, bool const inT
             .takesOwnership = inTakesOwnership,
 
             .i = 0,
-            .stack = Stack_create(true),
+            .stack = Stack_create(false),
             .root = NULL,
             .pos = NULL
         };

@@ -19,24 +19,29 @@ enum JsonState json_state_obj_end(struct JsonStateInput * const inObj)
     ++inObj->i;
     Deb_line("}");
 
-    buf = Stack_top(inObj->stack);
-    if(*((char*)buf)=='p')
+    if(((struct JsonEle *)Stack_top(inObj->stack))->val->type==JsonType_prop)
     {
-        Stack_pop(inObj->stack);
+        inObj->pos = &(((struct JsonEle *)Stack_pop(inObj->stack))->next);
     }
 
     buf = Stack_pop(inObj->stack);
-    if((buf!=NULL)&&(*((char*)buf)=='}'))
+    if(buf!=NULL)
     {
-        if(inObj->i<inObj->len)
+        struct JsonEle * const container = (struct JsonEle *)buf;
+
+        if(container->val->type==JsonType_obj)
         {
-            retVal = JsonState_val_end;
-        }
-        else
-        {
-            if(Stack_isEmpty(inObj->stack))
+            if(inObj->i<inObj->len)
             {
-                retVal = JsonState_done;
+                inObj->pos = &(container->next);
+                retVal = JsonState_val_end;
+            }
+            else
+            {
+                if(Stack_isEmpty(inObj->stack))
+                {
+                    retVal = JsonState_done;
+                }
             }
         }
     }
