@@ -4,8 +4,83 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 #include "Obj.h"
 #include "Str.h"
+
+char* Str_from_double_create(double const inVal)
+{
+    char* retVal = NULL;
+    char const * const formatStr = "%f"; // Add some formatting?
+    char dummy[] = { '\0' };
+    int const strLen = snprintf(dummy, sizeof(dummy)*sizeof(char), formatStr, inVal); // Without terminating '\0'.
+
+    if(strLen>0)
+    {
+        retVal = (char*)malloc((((size_t)strLen)+1)*sizeof(char));
+        assert(retVal!=NULL);
+
+        if(sprintf(retVal, formatStr, inVal)!=strLen)
+        {
+            free(retVal);
+            retVal = NULL;
+        }
+    }
+
+    return retVal;
+}
+
+char* Str_concat_create(char const * const inStrA, char const * const inStrB)
+{
+    char* retVal = NULL;
+
+    assert((inStrA!=NULL)&&(inStrB!=NULL));
+    if((inStrA!=NULL)&&(inStrB!=NULL))
+    {
+        size_t const aLen = strlen(inStrA),
+            bLen = strlen(inStrB),
+            valLen = aLen+bLen+1;
+
+        retVal = (char*)malloc(valLen*sizeof(char));
+        assert(retVal!=NULL);
+
+        if(valLen==1)
+        {
+            retVal[0] = '\0';
+        }
+        else
+        {
+            size_t pos = 0;
+
+            strncpy(retVal+pos, inStrA, aLen);
+            pos += aLen;
+            strncpy(retVal+pos, inStrB, bLen);
+            pos += bLen;
+            retVal[pos] = '\0';
+            assert(pos==(valLen-1));
+        }
+    }
+
+    return retVal;
+}
+
+char* Str_copy_create(char const * const inStr)
+{
+    char* retVal = NULL;
+
+    assert(inStr!=NULL);
+
+    if(inStr!=NULL)
+    {
+        size_t const strLen = strlen(inStr)+1;
+
+        retVal = (char*)malloc(strLen*sizeof(char));
+        assert(retVal!=NULL);
+        strncpy(retVal, inStr, strLen);
+    }
+
+    return retVal;
+}
 
 double* Str_double_create(char const * const inStr, size_t const inLen, size_t * const inOutIndex)
 {
@@ -78,7 +153,6 @@ char* Str_string_create(char const * const inStr, size_t const inLen, char const
         size_t const len = terminatorPos-firstCharPos; // (without terminator)
 
         buf = malloc((sizeof *buf)*(len+1));
-
         assert(buf!=NULL);
 
         strncpy(buf, inStr+firstCharPos, len);

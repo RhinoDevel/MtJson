@@ -3,8 +3,11 @@
 
 #include <string.h>
 #include <assert.h>
+#include <stdlib.h>
+#include "Str.h"
 #include "JsonState.h"
 #include "JsonStateInput.h"
+#include "JsonProp.h"
 #include "json_state_begin.h"
 #include "json_state_arr_begin.h"
 #include "json_state_arr_end.h"
@@ -20,11 +23,157 @@
 #include "json_state_prop_begin.h"
 #include "json.h"
 
+/** Takes ownership of given string.
+ */
+static char* stringify(struct JsonEle * const inEle, char * const inStr)
+{
+    char *retVal = inStr,
+        *buf = NULL;
+    struct JsonEle * cur = inEle;
+
+    assert(inEle!=NULL);
+
+    if(inStr==NULL)
+    {
+        retVal = malloc(sizeof(*retVal));
+        assert(retVal!=NULL);
+        *retVal = '\0';
+    }
+
+    do
+    {
+        assert(cur->val!=NULL);
+
+        switch(cur->val->type)
+        {
+            case JsonType_null:
+                assert(strlen(retVal)>0);
+                buf = retVal;
+                retVal = Str_concat_create(buf, "null");
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_boolean:
+                assert(strlen(retVal)>0);
+                buf = retVal;
+                retVal = Str_concat_create(buf, (*((bool*)(cur->val->val)))?"true":"false");
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_string:
+                assert(strlen(retVal)>0);
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "\"");
+                free(buf);
+                buf = NULL;
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, (char*)(cur->val->val));
+                free(buf);
+                buf = NULL;
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "\"");
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_number:
+                assert(strlen(retVal)>0);
+                buf = retVal;
+                retVal = Str_concat_create(buf, Str_from_double_create(*((double*)(cur->val->val))));
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_arr:
+                buf = retVal;
+                retVal = Str_concat_create(buf, "[");
+                free(buf);
+                buf = NULL;
+
+                if(cur->val->val!=NULL)
+                {
+                    retVal = stringify((struct JsonEle *)(cur->val->val), retVal);
+                }
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "]");
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_obj:
+                buf = retVal;
+                retVal = Str_concat_create(buf, "{");
+                free(buf);
+                buf = NULL;
+
+                if(cur->val->val!=NULL)
+                {
+                    retVal = stringify((struct JsonEle *)(cur->val->val), retVal);
+                }
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "}");
+                free(buf);
+                buf = NULL;
+                break;
+
+            case JsonType_prop:
+            {
+                struct JsonProp * const jsonProp = (struct JsonProp *)(cur->val->val);
+
+                assert(strlen(retVal)>0);
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "\"");
+                free(buf);
+                buf = NULL;
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, jsonProp->name);
+                free(buf);
+                buf = NULL;
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, "\"");
+                free(buf);
+                buf = NULL;
+
+                buf = retVal;
+                retVal = Str_concat_create(buf, ":");
+                free(buf);
+                buf = NULL;
+
+                retVal = stringify(jsonProp->ele, retVal);
+                break;
+            }
+
+            default:
+                assert(false);
+                break;
+        }
+
+        cur = cur->next;
+        if(cur!=NULL)
+        {
+            buf = retVal;
+            retVal = Str_concat_create(buf, ",");
+            free(buf);
+            buf = NULL;
+        }
+    }while(cur!=NULL);
+
+    return retVal;
+}
+
 char* json_stringify(struct JsonEle * const inEle, bool const inTakeOwnership)
 {
-    char* retVal = NULL;
-
-    assert(false); // MT_TODO: TEST: Implement!
+    char* retVal = stringify(inEle, NULL);
 
     if(inTakeOwnership)
     {

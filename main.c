@@ -15,6 +15,7 @@ int main()
        "{}",
        "[]",
        "[{}]",
+       "[false,true,false,true]",
        "{\"a\":null}",
        "{\"a\":null,\"b\":null}",
        "{\"a\":1234,\"b\":1234.5678}",
@@ -38,15 +39,20 @@ int main()
     for(i = startIndex;i<=endIndex;++i)
     {
         struct JsonEle * const root = json_parse(testStr[i], false);
+        char * str = NULL;
 
         if(root==NULL)
         {
-            printf("Test at index %d failed: \"%s\"!\n", i, testStr[i]);
+            printf("Parse test at index %d failed: \"%s\"!\n", i, testStr[i]);
             break;
         }
+        printf("Parse test at index %d succeeded.", i);
 
-        printf("Test at index %d succeeded.\n", i);
-        JsonEle_delete(root);
+        str = json_stringify(root, true);
+
+        printf(" Stringify result: \"%s\".\n", str);
+
+        free(str);
     }
     if(i==testStrCnt)
     {

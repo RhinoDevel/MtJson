@@ -10,6 +10,20 @@
 extern "C" {
 #endif
 
+char* Str_from_double_create(double const inVal);
+
+/** Return a new string holding given string A plus string B.
+ *
+ * - Returns NULL on error.
+ */
+char* Str_concat_create(char const * const inStrA, char const * const inStrB);
+
+/** Return a copy of the given ('\0' terminated) string.
+ *
+ * - Returns NULL on error.
+ */
+char* Str_copy_create(char const * const inStr);
+
 /** Tries to parse double value from given position in given string
  *  and returns a pointer to the double value.
  *  Increments index given on success.
