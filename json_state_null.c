@@ -22,9 +22,7 @@ enum JsonState json_state_null(struct JsonStateInput * const inObj)
         {
             inObj->i += 4;
             //Deb_line("null");
-            *(inObj->pos) = JsonEle_create(JsonType_null, NULL);
-            assert(*(inObj->pos)!=NULL);
-            inObj->pos = &((*(inObj->pos))->next);
+            JsonStateInput_addEle(inObj, JsonType_null, NULL);
 
             retVal = JsonState_val_end;
         }

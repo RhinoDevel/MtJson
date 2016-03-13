@@ -6,6 +6,17 @@
 #include <assert.h>
 #include "JsonStateInput.h"
 
+void JsonStateInput_addEle(struct JsonStateInput * const inJsonStateInput, enum JsonType const inType, void * const inVal)
+{
+    assert(inJsonStateInput!=NULL);
+    assert(inJsonStateInput->pos!=NULL);
+
+    *(inJsonStateInput->pos) = JsonEle_create(inType, inVal);
+    assert(*(inJsonStateInput->pos)!=NULL);
+
+    inJsonStateInput->pos = &((*(inJsonStateInput->pos))->next);
+}
+
 struct JsonStateInput * JsonStateInput_create(char * const inStr, bool const inTakesOwnership)
 {
     struct JsonStateInput * const retVal = malloc(sizeof *retVal);

@@ -26,9 +26,7 @@ enum JsonState json_state_boolean(struct JsonStateInput * const inObj)
                 {
                     inObj->i += 4;
                     //Deb_line("true");
-                    *(inObj->pos) = JsonEle_create(JsonType_boolean, Obj_bool_create(true));
-                    assert(*(inObj->pos)!=NULL);
-                    inObj->pos = &((*(inObj->pos))->next);
+                    JsonStateInput_addEle(inObj, JsonType_boolean, Obj_bool_create(true));
 
                     retVal = JsonState_val_end;
                 }
@@ -41,9 +39,7 @@ enum JsonState json_state_boolean(struct JsonStateInput * const inObj)
                 {
                     inObj->i += 5;
                     //Deb_line("false");
-                    *(inObj->pos) = JsonEle_create(JsonType_boolean, Obj_bool_create(false));
-                    assert(*(inObj->pos)!=NULL);
-                    inObj->pos = &((*(inObj->pos))->next);
+                    JsonStateInput_addEle(inObj, JsonType_boolean, Obj_bool_create(false));
 
                     retVal = JsonState_val_end;
                 }
