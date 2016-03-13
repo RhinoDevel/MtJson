@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "JsonEle.h"
 #include "json.h"
@@ -46,12 +47,30 @@ int main()
             printf("Parse test at index %d failed: \"%s\"!\n", i, testStr[i]);
             break;
         }
-        printf("Parse test at index %d succeeded.", i);
 
         str = json_stringify(root, true);
+        {
+            struct JsonEle * const strRoot = json_parse(str, false);
+            char * strStr = NULL;
 
-        printf(" Stringify result: \"%s\".\n", str);
+            if(strRoot==NULL)
+            {
+                printf("RE-parse test at index %d failed: \"%s\"!\n", i, str);
+                free(str);
+                break;
+            }
+            strStr = json_stringify(strRoot, true);
 
+            if(strcmp(str, strStr)!=0)
+            {
+                printf("RE-stringify test failed! RE-stringify result: \"%s\"\n", str);
+                free(strStr);
+                free(str);
+                break;
+            }
+
+            free(strStr);
+        }
         free(str);
     }
     if(i==testStrCnt)
