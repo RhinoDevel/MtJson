@@ -17,7 +17,7 @@ enum JsonState json_state_obj_end(struct JsonStateInput * const inObj)
     assert(inObj->str[inObj->i]=='}');
 
     ++inObj->i;
-    Deb_line("}");
+    //Deb_line("}");
 
     if(((struct JsonEle *)Stack_top(inObj->stack))->val->type==JsonType_prop)
     {

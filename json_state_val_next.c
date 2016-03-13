@@ -14,7 +14,7 @@ enum JsonState json_state_val_next(struct JsonStateInput * const inObj)
     assert(!Stack_isEmpty(inObj->stack));
 
     ++inObj->i;
-    Deb_line(",");
+    //Deb_line(",");
 
     return JsonState_val_begin;
 }

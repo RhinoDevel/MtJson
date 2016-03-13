@@ -23,14 +23,14 @@ enum JsonState json_state_prop_begin(struct JsonStateInput * const inObj)
 
     if(prop!=NULL)
     {
-        Deb_line("\"%s\"", prop);
+        //Deb_line("\"%s\"", prop);
 
         if(inObj->str[inObj->i]==':')
         {
             ++inObj->i;
-            Deb_line(":");
+            //Deb_line(":");
 
-            *(inObj->pos) = JsonEle_create(JsonVal_create(JsonType_prop, JsonProp_create(prop)));
+            *(inObj->pos) = JsonEle_create(JsonType_prop, JsonProp_create(prop));
             Stack_push(inObj->stack, *(inObj->pos));
             inObj->pos = &(((struct JsonProp *)((*(inObj->pos))->val->val))->ele);
 

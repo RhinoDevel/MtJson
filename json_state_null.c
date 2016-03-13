@@ -21,8 +21,8 @@ enum JsonState json_state_null(struct JsonStateInput * const inObj)
         if(strncmp(inObj->str+inObj->i, "null", 4)==0)
         {
             inObj->i += 4;
-            Deb_line("null");
-            *(inObj->pos) = JsonEle_create(JsonVal_create(JsonType_null, NULL));
+            //Deb_line("null");
+            *(inObj->pos) = JsonEle_create(JsonType_null, NULL);
             assert(*(inObj->pos)!=NULL);
             inObj->pos = &((*(inObj->pos))->next);
 

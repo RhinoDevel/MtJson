@@ -16,7 +16,7 @@ enum JsonState json_state_arr_end(struct JsonStateInput * const inObj)
     assert(inObj->str[inObj->i]==']');
 
     ++inObj->i;
-    Deb_line("]");
+    //Deb_line("]");
 
     void const * const pop = Stack_pop(inObj->stack);
 

@@ -22,17 +22,17 @@ void JsonEle_delete(struct JsonEle * const inJsonEle)
     }while(cur!=NULL);
 }
 
-struct JsonEle * JsonEle_create(void * const inVal)
+struct JsonEle * JsonEle_create(enum JsonType const inType, void * const inVal)
 {
     struct JsonEle * const retVal = malloc(sizeof *retVal);
     struct JsonEle const buf = (struct JsonEle)
         {
-            .val = inVal,
+            .val = JsonVal_create(inType, inVal),
             .next = NULL
         };
 
-    assert(inVal!=NULL);
     assert(retVal!=NULL);
+    assert(buf.val!=NULL);
 
     memcpy(retVal, &buf, sizeof *retVal);
 

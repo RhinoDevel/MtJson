@@ -16,20 +16,20 @@ enum JsonState json_state_arr_begin(struct JsonStateInput * const inObj)
     assert(inObj->str[inObj->i]=='[');
 
     ++inObj->i;
-    Deb_line("[");
+    //Deb_line("[");
 
     if(inObj->i<inObj->len)
     {
         if(inObj->root==NULL)
         {
-            inObj->root = JsonEle_create(JsonVal_create(JsonType_arr, NULL));
+            inObj->root = JsonEle_create(JsonType_arr, NULL);
             inObj->pos = (struct JsonEle * *)(&(inObj->root->val->val));
 
             Stack_push(inObj->stack, inObj->root);
         }
         else
         {
-            *(inObj->pos) = JsonEle_create(JsonVal_create(JsonType_arr, NULL));
+            *(inObj->pos) = JsonEle_create(JsonType_arr, NULL);
             Stack_push(inObj->stack, *(inObj->pos));
             inObj->pos = (struct JsonEle * *)(&((*(inObj->pos))->val->val));
         }

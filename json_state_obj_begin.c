@@ -16,13 +16,13 @@ enum JsonState json_state_obj_begin(struct JsonStateInput * const inObj)
     assert(inObj->str[inObj->i]=='{');
 
     ++inObj->i;
-    Deb_line("{");
+    //Deb_line("{");
 
     if(inObj->i<inObj->len)
     {
         if(inObj->root==NULL)
         {
-            inObj->root = JsonEle_create(JsonVal_create(JsonType_obj, NULL));
+            inObj->root = JsonEle_create(JsonType_obj, NULL);
             assert(inObj->root!=NULL);
             inObj->pos = (struct JsonEle * *)&(inObj->root->val->val);
 
@@ -30,7 +30,7 @@ enum JsonState json_state_obj_begin(struct JsonStateInput * const inObj)
         }
         else
         {
-            *(inObj->pos) = JsonEle_create(JsonVal_create(JsonType_obj, NULL));
+            *(inObj->pos) = JsonEle_create(JsonType_obj, NULL);
             assert((*(inObj->pos))!=NULL);
             Stack_push(inObj->stack, *(inObj->pos));
             inObj->pos = (struct JsonEle * *)&((*(inObj->pos))->val->val);

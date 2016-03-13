@@ -5,6 +5,7 @@
 #define MT_JSONELE
 
 #include <stdbool.h>
+#include "JsonType.h"
 #include "JsonVal.h"
 
 #ifdef	__cplusplus
@@ -27,7 +28,7 @@ void JsonEle_delete(struct JsonEle * const inJsonEle);
  *
  *  - Takes ownership of given value object.
  */
-struct JsonEle * JsonEle_create(void * const inVal);
+struct JsonEle * JsonEle_create(enum JsonType const inType, void * const inVal);
 
 #ifdef	__cplusplus
 }

@@ -19,8 +19,8 @@ enum JsonState json_state_string(struct JsonStateInput * const inObj)
 
     if(val!=NULL)
     {
-        Deb_line("\"%s\"", val);
-        *(inObj->pos) = JsonEle_create(JsonVal_create(JsonType_string, val)); // (takes ownership of val)
+        //Deb_line("\"%s\"", val);
+        *(inObj->pos) = JsonEle_create(JsonType_string, val); // (takes ownership of val)
         assert(*(inObj->pos)!=NULL);
         inObj->pos = &((*(inObj->pos))->next);
         retVal = JsonState_val_end;
