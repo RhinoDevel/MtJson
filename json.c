@@ -4,6 +4,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "FileSys.h"
 #include "Str.h"
 #include "JsonState.h"
 #include "JsonStateInput.h"
@@ -262,3 +264,91 @@ struct JsonEle * json_parse(char * const inStr, bool const inTakeOwnership)
     return retVal;
 }
 
+struct JsonEle * json_read_from_file(char const * const inPath)
+{
+    struct JsonEle * retVal = NULL;
+
+    if(inPath!=NULL)
+    {
+        off_t const size = FileSys_GetFileSize(inPath);
+
+        if(size>/*=*/0)
+        {
+            FILE* f = fopen(inPath, "rb"); // Opening in BINARY mode.
+
+            if(f!=NULL)
+            {
+                size_t const len = (size_t)size;
+                char * const str = malloc((len+1)*(sizeof *str));
+
+                if(str!=NULL)
+                {
+                    if(fread(str, sizeof *str, len, f)==len)
+                    {
+                        fclose(f);
+
+                        str[len] = '\0';
+
+                        retVal = json_parse(str, true);
+                    }
+                }
+
+                if(f!=NULL)
+                {
+                    fclose(f); // Return value ignored.
+                }
+            }
+        }
+    }
+    return retVal;
+}
+
+bool json_write_to_file(struct JsonEle * inEle, char const * const inPath, bool const inTakeOwnership)
+{
+    bool retVal = false;
+    FILE* f = NULL;
+    char* str = NULL;
+
+    do
+    {
+        size_t strLen = 0;
+
+        if(inEle==NULL)
+        {
+            break;
+        }
+        if(inPath==NULL)
+        {
+            break;
+        }
+
+        str = json_stringify(inEle, inTakeOwnership);
+        inEle = NULL;
+        if(str==NULL)
+        {
+            break;
+        }
+
+        strLen = strlen(str);
+
+        f = fopen(inPath, "wb"); // Opening in BINARY mode.
+        if(f==NULL)
+        {
+            break;
+        }
+
+        if(fwrite(str, sizeof *str, strLen, f)!=strLen)
+        {
+            break;
+        }
+
+        retVal = true;
+    }while(false);
+
+    if(f!=NULL)
+    {
+        fclose(f); // Return value ignored.
+    }
+    free(str);
+    return retVal;
+}
