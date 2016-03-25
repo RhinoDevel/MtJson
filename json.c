@@ -84,12 +84,18 @@ static char* stringify(struct JsonEle * const inEle, char * const inStr)
                 break;
 
             case JsonType_number:
+            {
                 assert(strlen(retVal)>0);
+                
+                char * const dblStr = Str_from_double_create(*((double*)(cur->val->val)));
+                
                 buf = retVal;
-                retVal = Str_concat_create(buf, Str_from_double_create(*((double*)(cur->val->val))));
+                retVal = Str_concat_create(buf, dblStr);
+                free(dblStr);
                 free(buf);
                 buf = NULL;
                 break;
+            }
 
             case JsonType_arr:
                 buf = retVal;
