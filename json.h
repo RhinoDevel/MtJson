@@ -15,9 +15,12 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif //__cplusplus
-    
+
 char* json_stringify(struct JsonEle * const inEle, bool const inTakeOwnership);
 struct JsonEle * json_parse(char * const inStr, bool const inTakeOwnership);
+
+bool json_write_to_file(struct JsonEle * inEle, char const * const inPath, bool const inTakeOwnership);
+struct JsonEle * json_read_from_file(char const * const inPath);
 
 #ifdef	__cplusplus
 }
