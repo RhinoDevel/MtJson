@@ -1,2 +1,2 @@
 # MtJson
-WORK IN PROGRESS: JSON parser and stringifier written in C. Sample code included (see main.c).
+JSON parser and stringifier written in C. Not 100% standard compliant, yet! Sample code included (see main.c).
