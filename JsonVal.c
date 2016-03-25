@@ -8,6 +8,61 @@
 #include "JsonEle.h"
 #include "JsonProp.h"
 
+bool JsonVal_areEqual(struct JsonVal const * const inA, struct JsonVal const * const inB, bool const inIgnoreArrOrder)
+{
+    bool retVal = false;
+    
+    assert(inA!=NULL);
+    assert(inB!=NULL);
+    assert(inA->type!=JsonType_prop);
+    assert(inB->type!=JsonType_prop);
+    
+    if(inA->type==inB->type)
+    {
+        switch(inA->type)
+        {
+            case JsonType_null:
+                assert(inA->val==NULL);
+                assert(inB->val==NULL);
+                retVal = true;
+                break;
+                
+            case JsonType_boolean:
+                assert(inA->val!=NULL);
+                assert(inB->val!=NULL);
+                retVal = *((bool const *)(inA->val))==*((bool const *)(inB->val));
+                break;
+                
+            case JsonType_number:
+                assert(inA->val!=NULL);
+                assert(inB->val!=NULL);
+                retVal = *((double const *)(inA->val))==*((double const *)(inB->val));
+                break;
+                
+            case JsonType_string:
+                assert(inA->val!=NULL);
+                assert(inB->val!=NULL);
+                retVal = strcmp((char const *)(inA->val), (char const *)(inB->val))==0;
+                break;
+                
+            case JsonType_arr:
+                retVal = JsonEle_arrAreEqual((struct JsonEle const *)(inA->val), (struct JsonEle const *)(inB->val), inIgnoreArrOrder); // *** "RECURSION" ***
+                break;
+                
+            case JsonType_obj:
+                retVal = JsonEle_objAreEqual((struct JsonEle const *)(inA->val), (struct JsonEle const *)(inB->val), inIgnoreArrOrder); // *** "RECURSION" ***
+                break;
+                
+            case JsonType_prop: // (falls through)
+            default:
+                assert(false);
+                break;
+        }
+    }
+    
+    return retVal;
+}
+
 void JsonVal_delete(struct JsonVal * const inJsonVal)
 {
     assert(inJsonVal!=NULL);

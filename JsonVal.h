@@ -17,6 +17,8 @@ struct JsonVal
     void * val;
 };
 
+bool JsonVal_areEqual(struct JsonVal const * const inA, struct JsonVal const * const inB, bool const inIgnoreArrOrder);
+    
 /** Delete JSON value given.
  *
  *  - Deletes value object, too.

@@ -5,6 +5,26 @@
 #include <string.h>
 #include <assert.h>
 #include "JsonProp.h"
+#include "JsonEle.h"
+
+bool JsonProp_areEqual(struct JsonProp const * const inA, struct JsonProp const * const inB, bool const inIgnoreArrOrder)
+{
+    bool retVal = false;
+    
+    assert(inA!=NULL);
+    assert(inB!=NULL);
+    assert((inA->name!=NULL)&&(inA->name[0]!='\0'));
+    assert((inB->name!=NULL)&&(inB->name[0]!='\0'));
+    assert(inA->ele!=NULL);
+    assert(inB->ele!=NULL);
+    
+    if(strcmp(inA->name, inB->name)==0)
+    {
+        retVal = JsonEle_areEqual(inA->ele, inB->ele, inIgnoreArrOrder); // *** "RECURSION" ***
+    }
+    
+    return retVal;
+}
 
 void JsonProp_delete(struct JsonProp * const inJsonProp)
 {

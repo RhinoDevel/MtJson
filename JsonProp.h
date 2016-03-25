@@ -16,6 +16,8 @@ struct JsonProp
     struct JsonEle * ele;
 };
 
+bool JsonProp_areEqual(struct JsonProp const * const inA, struct JsonProp const * const inB, bool const inIgnoreArrOrder);
+    
 /** Delete property.
  *
  *  - Also deletes name and JSON value objects from heap.

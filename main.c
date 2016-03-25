@@ -48,7 +48,7 @@ int main()
             break;
         }
 
-        str = json_stringify(root, true);
+        str = json_stringify(root, false);
         {
             struct JsonEle * const strRoot = json_parse(str, false);
             char * strStr = NULL;
@@ -57,8 +57,19 @@ int main()
             {
                 printf("RE-parse test at index %d failed: \"%s\"!\n", i, str);
                 free(str);
+                JsonEle_delete(root);
                 break;
             }
+            
+            if(!JsonEle_areEqual(root, strRoot, false)) // This test should be extended (to also test detection of actual differences).
+            {
+                printf("Equality-check failed at index %d: \"%s\"!\n", i, str);
+                free(str);
+                JsonEle_delete(strRoot);
+                JsonEle_delete(root);
+                break;
+            }
+            
             strStr = json_stringify(strRoot, true);
 
             if(strcmp(str, strStr)!=0)
@@ -66,12 +77,14 @@ int main()
                 printf("RE-stringify test failed! RE-stringify result: \"%s\"\n", str);
                 free(strStr);
                 free(str);
+                JsonEle_delete(root);
                 break;
             }
 
             free(strStr);
         }
         free(str);
+        JsonEle_delete(root);
     }
     if(i==testStrCnt)
     {
