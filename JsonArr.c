@@ -8,10 +8,6 @@
 
 void JsonArr_push(struct JsonArr * const inArr, enum JsonType const inType, void * const inVal)
 {
-    //struct JsonEle * * pos = (struct JsonEle * *)(&(retVal->val->val));
-    // *pos = JsonEle_create(JsonType_string, Str_copy_create(path));
-      //pos = &((*pos)->next);
-
     struct JsonEle * const ele = JsonEle_create(inType, inVal);
 
     assert(inArr!=NULL);
