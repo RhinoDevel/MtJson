@@ -4,6 +4,8 @@
 #ifndef MT_FILESYS
 #define MT_FILESYS
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,6 +35,18 @@ char * FileSys_GetAbsPath(char const * const inPath);
 enum FileSys_EntryType FileSys_GetEntryType(char const * const inPath);
 
 off_t FileSys_GetFileSize(char const * const inPath);
+
+/** Sets given bool pointer's value to true,
+ *  if the file at both paths given is the same (not a copy, actually the same entry in file system).
+ *
+ *  - Returns true, if no error occurred, false otherwise.
+ *  * Differentiates between links and files!
+ */
+bool FileSys_arePathsToSameFile(char const * const inA, char const * const inB, bool * const inOutSame);
+
+bool FileSys_exists(char const * const inPath, bool * const inOutExists);
+
+bool FileSys_isDirEmpty(char const * const inPath, bool * const inOutEmpty);
 
 #ifdef __cplusplus
 }

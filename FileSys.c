@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <assert.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string.h>
@@ -95,4 +96,136 @@ off_t FileSys_GetFileSize(char const * const inPath)
     }
 
     return -1;
+}
+
+bool FileSys_arePathsToSameFile(char const * const inA, char const * const inB, bool * const inOutSame)
+{
+    bool retVal = true; // Indicates no error (true = no error).
+    struct stat sA;
+
+    assert(inA!=NULL);
+    assert(inB!=NULL);
+    assert(inOutSame!=NULL);
+
+    *inOutSame = false;
+
+    if(lstat(inA, &sA)==0)
+    {
+        struct stat sB;
+
+        if(lstat(inB, &sB)==0)
+        {
+            assert(sA.st_ino!=0);
+            assert(sA.st_dev!=0);
+            assert(sB.st_ino!=0);
+            assert(sB.st_dev!=0);
+
+            if((sA.st_dev==sB.st_dev)&&(sA.st_ino==sB.st_ino))
+            {
+                *inOutSame = true;
+            }
+            //
+            // Otherwise: Different files.
+        }
+        else
+        {
+            Deb_line("lstat() ERROR: %d!", errno);
+            errno = 0;
+            retVal = false; // Error!
+        }
+    }
+    else
+    {
+        Deb_line("lstat() ERROR: %d!", errno);
+        errno = 0;
+        retVal = false; // Error!
+    }
+
+    return retVal;
+}
+
+bool FileSys_exists(char const * const inPath, bool * const inOutExists)
+{
+    bool retVal = true; // Indicates no error (true = no error).
+    struct stat s;
+
+    assert(inPath!=NULL);
+    assert(inOutExists!=NULL);
+
+    *inOutExists = false;
+
+    if(lstat(inPath, &s)==0)
+    {
+        *inOutExists = true;
+    }
+    else
+    {
+        if(errno!=ENOENT)
+        {
+            Deb_line("lstat() ERROR: %d!", errno);
+            retVal = false; // Unexpected error!
+        }
+        //
+        // Otherwise: Does not exist.
+
+        errno = 0;
+    }
+
+    return retVal;
+}
+
+/** Original source: http://stackoverflow.com/questions/6383584/check-if-a-directory-is-empty-using-c-on-linux
+ */
+bool FileSys_isDirEmpty(char const * const inPath, bool * const inOutEmpty)
+{
+    bool retVal = true; // Indicates no error (true = no error).
+    DIR* d = NULL;
+
+    assert(inPath!=NULL);
+    assert(inOutEmpty!=NULL);
+
+    *inOutEmpty = false;
+
+    d = opendir(inPath);
+    if(d!=NULL)
+    {
+        int n = 0;
+        struct dirent * e = readdir(d);
+
+        while(e!=NULL)
+        {
+            ++n;
+            if(n==3) // "." & ".." are OK to be found as "entries" of an empty array.
+            {
+                break;
+            }
+
+            e = readdir(d);
+        }
+        if(errno==0)
+        {
+            if(n<3)
+            {
+                *inOutEmpty = true;
+            }
+        }
+        else
+        {
+            Deb_line("readdir() ERROR: %d!", errno);
+            errno = 0;
+            retVal = false;
+        }
+
+        closedir(d); // (return value ignored..)
+        errno = 0;
+        d = NULL;
+    }
+    else
+    {
+        Deb_line("opendir() ERROR: %d!", errno);
+        errno = 0;
+        retVal = false;
+    }
+
+    return retVal;
 }
