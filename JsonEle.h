@@ -18,6 +18,10 @@ struct JsonEle
     struct JsonEle * next;
 };
 
+/** Expects the first element of an object or NULL for an empty object given.
+ */
+struct JsonEle * JsonEle_objGetPropVal(struct JsonEle const * const inFirstEle, char const * const inPropName);
+
 /** Expects the first elements of both arrays or NULL for an empty array.
  */
 bool JsonEle_arrAreEqual(struct JsonEle const * const inA, struct JsonEle const * const inB, bool const inIgnoreArrOrder);
@@ -25,9 +29,9 @@ bool JsonEle_arrAreEqual(struct JsonEle const * const inA, struct JsonEle const 
 /** Expects the first elements (holding JSON properties) of both objects or NULL for an empty object.
  */
 bool JsonEle_objAreEqual(struct JsonEle const * const inA, struct JsonEle const * const inB, bool const inIgnoreArrOrder);
-    
+
 bool JsonEle_areEqual(struct JsonEle const * const inA, struct JsonEle const * const inB, bool const inIgnoreArrOrder);
-    
+
 /** Deletes JSON element.
  *
  *  - Also deletes its JSON value object.

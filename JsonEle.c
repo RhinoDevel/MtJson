@@ -167,6 +167,36 @@ static bool JsonEle_arrHasAllValues(struct JsonEle const * const inArrEle, struc
     return retVal;
 }
 
+struct JsonEle * JsonEle_objGetPropVal(struct JsonEle const * const inFirstEle, char const * const inPropName)
+{
+    struct JsonEle * retVal = NULL;
+    struct JsonEle const * cur = inFirstEle;
+
+    assert((inPropName!=NULL)&&(inPropName[0]!='\0'));
+
+    while(cur!=NULL)
+    {
+        assert(cur->val!=NULL);
+        assert(cur->val->type==JsonType_prop);
+        assert(cur->val->val!=NULL);
+
+        struct JsonProp const * const prop = (struct JsonProp const *)(cur->val->val);
+
+        assert(prop->ele!=NULL);
+        assert((prop->name!=NULL)&&(prop->name[0]!='\0'));
+
+        if(strcmp(inPropName, prop->name)==0)
+        {
+            retVal = prop->ele;
+            break; // Found
+        }
+
+        cur = cur->next;
+    }
+
+    return retVal;
+}
+
 bool JsonEle_arrAreEqual(struct JsonEle const * const inA, struct JsonEle const * const inB, bool const inIgnoreArrOrder)
 {
     bool retVal = false;
