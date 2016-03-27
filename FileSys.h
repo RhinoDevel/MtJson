@@ -48,6 +48,12 @@ bool FileSys_exists(char const * const inPath, bool * const inOutExists);
 
 bool FileSys_isDirEmpty(char const * const inPath, bool * const inOutEmpty);
 
+/** Deletes what is found at given path.
+ *
+ *  - Removes folder with its content (recursively), if given path is a directory.
+ */
+bool FileSys_delete(char const * const inPath);
+
 #ifdef __cplusplus
 }
 #endif

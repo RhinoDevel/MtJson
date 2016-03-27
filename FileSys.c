@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include "Deb.h"
@@ -225,6 +226,105 @@ bool FileSys_isDirEmpty(char const * const inPath, bool * const inOutEmpty)
         Deb_line("opendir() ERROR: %d!", errno);
         errno = 0;
         retVal = false;
+    }
+
+    return retVal;
+}
+
+bool FileSys_delete(char const * const inPath)
+{
+    bool retVal = false;
+
+    switch(FileSys_GetEntryType(inPath))
+    {
+        case FileSys_EntryType_File:
+            if(unlink(inPath)==0)
+            {
+                retVal = true;
+            }
+#ifndef NDEBUG
+            else
+            {
+                Deb_line("Error: Failed to remove file \"%s\" (error %d)!", inPath, errno);
+            }
+#endif //NDEBUG
+            errno = 0;
+            break;
+
+        case FileSys_EntryType_Dir:
+        {
+            DIR * const d = opendir(inPath);
+
+            if(d!=NULL)
+            {
+                bool errOcc = false;
+                struct dirent * e = readdir(d);
+
+                while(e!=NULL)
+                {
+                    if((strcmp(e->d_name, ".")!=0)&&(strcmp(e->d_name, "..")!=0))
+                    {
+                        char * const fullPath = FileSys_GetFullPath(inPath, e->d_name);
+
+                        if(!FileSys_delete(fullPath)) // *** RECURSION ***
+                        {
+                            errOcc = true;
+                            free(fullPath);
+                            break;
+                        }
+                        free(fullPath);
+                    }
+
+                    e = readdir(d);
+                }
+                if(errOcc)
+                {
+                    break;
+                }
+                if(errno==0) // For readdir().
+                {
+                    if(rmdir(inPath)==0)
+                    {
+                        retVal = true;
+                    }
+#ifndef NDEBUG
+                    else
+                    {
+                        Deb_line("Error: Failed to remove folder \"%s\" (error %d)!", inPath, errno);
+                    }
+#endif //NDEBUG
+                    errno = 0;
+                }
+#ifndef NDEBUG
+                else
+                {
+                    Deb_line("Error: Failed to read an entry of folder \"%s\" (error %d)!", inPath, errno);
+                }
+#endif //NDEBUG
+                errno = 0;
+
+                closedir(d); // (return value ignored..)
+            }
+#ifndef NDEBUG
+            else
+            {
+                Deb_line("Error: Failed to open folder \"%s\" (error %d)!", inPath, errno);
+            }
+#endif //NDEBUG
+            errno = 0;
+            break;
+        }
+
+        case FileSys_EntryType_Unsupported:
+            Deb_line("Warning: Unsupported entry type received for \"%s\".", inPath);
+            break;
+
+        case FileSys_EntryType_Invalid:
+            Deb_line("Error: Invalid entry type received for \"%s\".", inPath);
+            break;
+        default:
+            Deb_line("Error: Unknown entry type received for \"%s\"!", inPath);
+            break;
     }
 
     return retVal;
