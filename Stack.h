@@ -42,6 +42,10 @@ void* Stack_top(struct Stack const * const inStack);
  */
 void Stack_clear(struct Stack * const inStack);
 
+/** DANGEROUS: Assumes all entries to be C strings (!) and prints them.
+ */
+void Stack_print_str(struct Stack * const inStack);
+
 /** All values on stack get removed and memory at given pointer gets freed.
  *
  * - Additionally frees memory at pointers on stack,
@@ -56,6 +60,10 @@ void Stack_delete(struct Stack * const inStack);
  *   during stack clearing and deletion.
  */
 struct Stack * Stack_create(bool const inTakesOwnership);
+
+/** Reverse order of all elements on stack (top gets to bottom, bottom to top, etc.).
+ */
+void Stack_flip(struct Stack * const inStack);
 
 /** Return true, if no elements on given stack.
  */
