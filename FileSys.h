@@ -54,6 +54,22 @@ bool FileSys_isDirEmpty(char const * const inPath, bool * const inOutEmpty);
  */
 bool FileSys_delete(char const * const inPath);
 
+/** Copy file at given input path to output path.
+ *
+ *  * Overwrites existing file.
+ *  - Returns false, if given paths lead to the same file.
+ *  - Output path must already include the destination file's name.
+ */
+bool FileSys_copyFile(char const * const inInputPath, char const * const inOutputPath);
+
+/** Copy what is found at given input to given output path.
+ *
+ *  - If there is a folder at given input path, this folder and its content (recursively) will be created at output path.
+ *  - Returns false, if given paths lead to the same file/folder.
+ *  - Output path must already include the destination file's/folder's name.
+ */
+bool FileSys_copy(char const * const inInputPath, char const * const inOutputPath);
+
 #ifdef __cplusplus
 }
 #endif

@@ -13,6 +13,7 @@
 #include "FileSys.h"
 
 static char const * const _dir_separator = "/";
+static size_t const _file_copy_buffer_size = 16*1024*1024; // 16 MB
 
 char * FileSys_GetFullPath(char const * const inPath, char const * const inName)
 {
@@ -324,6 +325,181 @@ bool FileSys_delete(char const * const inPath)
             break;
         default:
             Deb_line("Error: Unknown entry type received for \"%s\"!", inPath);
+            break;
+    }
+
+    return retVal;
+}
+
+/** Original source: http://stackoverflow.com/questions/29079011/copy-file-function-in-c
+ */
+bool FileSys_copyFile(char const * const inInputPath, char const * const inOutputPath)
+{
+    bool retVal = false,
+        outputExists = false;
+
+    assert(inInputPath!=NULL);
+    assert(inOutputPath!=NULL);
+
+    if(FileSys_exists(inOutputPath, &outputExists))
+    {
+        bool sameFile = false;
+
+        if((!outputExists)||FileSys_arePathsToSameFile(inInputPath, inOutputPath, &sameFile))
+        {
+            if(!sameFile)
+            {
+                FILE * const sRead = fopen(inInputPath, "r");
+
+                if(sRead!=NULL)
+                {
+                    FILE * const sWrite = fopen(inOutputPath, "w");
+
+                    if(sWrite!=NULL)
+                    {
+                        bool errOcc = false;
+                        char * const buf = malloc(_file_copy_buffer_size*(sizeof *buf));
+                        assert(buf!=NULL);
+
+                        while(!feof(sRead))
+                        {
+                            size_t const byteCount = fread(buf, sizeof *buf, _file_copy_buffer_size, sRead);
+
+                            if(ferror(sRead)!=0)
+                            {
+                                errOcc = true;
+                                break;
+                            }
+
+                            if (byteCount>0)
+                            {
+                                if(fwrite(buf, sizeof *buf, byteCount, sWrite)!=byteCount)
+                                {
+                                    errOcc = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(!errOcc)
+                        {
+                            retVal = true;
+                        }
+
+                        free(buf);
+                    }
+                    fclose(sWrite);
+                }
+                fclose(sRead);
+            }
+            //
+            // Otherwise: Defined as error.
+        }
+        //
+        // Otherwise: Error!
+    }
+    //
+    // Otherwise: Error!
+
+    return retVal;
+}
+
+
+bool FileSys_copy(char const * const inInputPath, char const * const inOutputPath)
+{
+    bool retVal = false;
+
+    assert(inInputPath!=NULL);
+    assert(inOutputPath!=NULL);
+
+    switch(FileSys_GetEntryType(inInputPath))
+    {
+        case FileSys_EntryType_File:
+            retVal = FileSys_copyFile(inInputPath, inOutputPath);
+            break;
+
+        case FileSys_EntryType_Dir:
+        {
+            bool outputFolderExists = false;
+            DIR* d = NULL;
+
+            if(!FileSys_exists(inOutputPath, &outputFolderExists))
+            {
+                break;
+            }
+
+            if(!outputFolderExists)
+            {
+                if(mkdir(inOutputPath, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0) // MT_TODO: TEST: Better use exact permissions to be read from input folder?
+                {
+                    Deb_line("Error: Failed to create folder \"%s\" (error %d)!", inOutputPath, errno);
+                    errno = 0;
+                    break;
+                }
+            }
+
+            d = opendir(inInputPath);
+            if(d!=NULL)
+            {
+                bool errOcc = false;
+                struct dirent * e = readdir(d);
+
+                while(e!=NULL)
+                {
+                    if((strcmp(e->d_name, ".")!=0)&&(strcmp(e->d_name, "..")!=0))
+                    {
+                        char * const fullInputPath = FileSys_GetFullPath(inInputPath, e->d_name),
+                            * const fullOutputPath = FileSys_GetFullPath(inOutputPath, e->d_name);
+
+                        if(!FileSys_copy(fullInputPath, fullOutputPath)) // *** RECURSION ***
+                        {
+                            errOcc = true;
+                            free(fullInputPath);
+                            free(fullOutputPath);
+                            break;
+                        }
+                        free(fullInputPath);
+                        free(fullOutputPath);
+                    }
+
+                    e = readdir(d);
+                }
+                if(errOcc)
+                {
+                    break;
+                }
+                if(errno==0)
+                {
+                    retVal = true;
+                }
+#ifndef NDEBUG
+                else // For readdir().
+                {
+                    Deb_line("Error: Failed to read an entry of folder \"%s\" (error %d)!", inInputPath, errno);
+                }
+#endif //NDEBUG
+                errno = 0;
+
+                closedir(d); // (return value ignored..)
+            }
+#ifndef NDEBUG
+            else
+            {
+                Deb_line("Error: Failed to open folder \"%s\" (error %d)!", inInputPath, errno);
+            }
+#endif //NDEBUG
+            errno = 0;
+            break;
+        }
+
+        case FileSys_EntryType_Unsupported:
+            Deb_line("Warning: Unsupported entry type received for \"%s\".", inInputPath);
+            break;
+
+        case FileSys_EntryType_Invalid:
+            Deb_line("Error: Invalid entry type received for \"%s\".", inInputPath);
+            break;
+        default:
+            Deb_line("Error: Unknown entry type received for \"%s\"!", inInputPath);
             break;
     }
 
