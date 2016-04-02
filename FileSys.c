@@ -403,7 +403,6 @@ bool FileSys_copyFile(char const * const inInputPath, char const * const inOutpu
     return retVal;
 }
 
-
 bool FileSys_copy(char const * const inInputPath, char const * const inOutputPath)
 {
     bool retVal = false;
@@ -503,5 +502,88 @@ bool FileSys_copy(char const * const inInputPath, char const * const inOutputPat
             break;
     }
 
+    return retVal;
+}
+
+int FileSys_getContentCount(char const * const inPath)
+{
+    int retVal = 0;
+    bool errOcc = false;
+    DIR * const d = opendir(inPath);
+
+    if(d!=NULL)
+    {
+        struct dirent * e = readdir(d);
+
+        while(e!=NULL)
+        {
+            if((strcmp(e->d_name, ".")!=0)&&(strcmp(e->d_name, "..")!=0))
+            {
+                char * const fullPath = FileSys_GetFullPath(inPath, e->d_name);
+
+                switch(FileSys_GetEntryType(fullPath))
+                {
+                    case FileSys_EntryType_File:
+                        ++retVal;
+                        break;
+
+                    case FileSys_EntryType_Dir:
+                    {
+                        int const subCount = FileSys_getContentCount(fullPath); // *** RECURSION ***
+
+                        if(subCount<0)
+                        {
+                            errOcc = true;
+                            break;
+                        }
+
+                        ++retVal; // For the folder.
+                        retVal += subCount; // For the content of the folder.
+                        break;
+                    }
+
+                    case FileSys_EntryType_Unsupported:
+                        Deb_line("Warning: Unsupported entry type received for \"%s\".", inPath);
+                        errOcc = true;
+                        break;
+
+                    case FileSys_EntryType_Invalid:
+                        Deb_line("Error: Invalid entry type received for \"%s\".", inPath);
+                        errOcc = true;
+                        break;
+                    default:
+                        Deb_line("Error: Unknown entry type received for \"%s\"!", inPath);
+                        errOcc = true;
+                        break;
+                }
+                free(fullPath);
+                if(errOcc)
+                {
+                    break;
+                }
+            }
+
+            e = readdir(d);
+        }
+        if(errno!=0) // For readdir().
+        {
+            Deb_line("Error: Failed to read an entry of folder \"%s\" (error %d)!", inPath, errno);
+            errOcc = true;
+        }
+        errno = 0;
+
+        closedir(d); // (return value ignored..)
+    }
+    else
+    {
+        Deb_line("Error: Failed to open folder \"%s\" (error %d)!", inPath, errno);
+        errOcc = true;
+    }
+    errno = 0;
+
+    if(errOcc)
+    {
+        retVal = -1;
+    }
     return retVal;
 }
