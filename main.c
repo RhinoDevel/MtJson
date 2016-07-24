@@ -27,7 +27,8 @@ int main()
        "{\"a\":{},\"b\":false}",
        "{\"a\":{\"a1\":[[{}]],\"a2\":null},\"myArr\":[1e-3,\"Eat my \\\"shorts!\",2E+5,3E4,null,[0,false,123,[]],[[]],[[false,-8.342,false],77e7]]}",
        "{\"myArr\":[],\"myObj\":{}}",
-       "[{\"myArr\":[],\"myObj\":{\"subArr\":[null,false,true,0.0,-42,\"beerbarreltree\"],\"subObj\":{}}}]"
+       "[{\"myArr\":[],\"myObj\":{\"subArr\":[null,false,true,0.0,-42,\"beerbarreltree\"],\"subObj\":{}}}]",
+       "{\"\\\"\":0}"
     };
     int const testStrCnt = (int)(sizeof testStr/sizeof *testStr),
         startIndex = 0,
@@ -42,6 +43,10 @@ int main()
         struct JsonEle * const root = json_parse(testStr[i], false);
         char * str = NULL;
 
+        //struct JsonProp * firstPropOfRootObj = (struct JsonProp *)(((struct JsonEle *)(root->val->val))->val->val);
+        //printf("Root object's first property's name: \"%s\"\n", firstPropOfRootObj->name);
+
+        printf("Input string at index %d: \"%s\"\n", i, testStr[i]);
         if(root==NULL)
         {
             printf("Parse test at index %d failed: \"%s\"!\n", i, testStr[i]);
@@ -49,6 +54,7 @@ int main()
         }
 
         str = json_stringify(root, false);
+        printf("Restr.string at index %d: \"%s\"\n", i, str);
         {
             struct JsonEle * const strRoot = json_parse(str, false);
             char * strStr = NULL;
@@ -60,7 +66,7 @@ int main()
                 JsonEle_delete(root);
                 break;
             }
-            
+
             if(!JsonEle_areEqual(root, strRoot, false)) // This test should be extended (to also test detection of actual differences).
             {
                 printf("Equality-check failed at index %d: \"%s\"!\n", i, str);
@@ -69,7 +75,7 @@ int main()
                 JsonEle_delete(root);
                 break;
             }
-            
+
             strStr = json_stringify(strRoot, true);
 
             if(strcmp(str, strStr)!=0)
