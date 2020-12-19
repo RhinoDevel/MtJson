@@ -1,7 +1,7 @@
 
 // MT, 2016feb26
 
-// MT_TODO: TEST: Not 100% like JSON standard:
+// TODO: Not 100% like JSON standard:
 //
 // - Only " signs get escaped and unescaped in strings.
 // - No UTF-8 / Unicode support.

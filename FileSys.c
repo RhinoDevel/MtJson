@@ -433,7 +433,7 @@ bool FileSys_copy(char const * const inInputPath, char const * const inOutputPat
 
             if(!outputFolderExists)
             {
-                if(mkdir(inOutputPath, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0) // MT_TODO: TEST: Better use exact permissions to be read from input folder?
+                if(mkdir(inOutputPath, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH)!=0) // TODO: Better use exact permissions to be read from input folder?
                 {
                     Deb_line("Error: Failed to create folder \"%s\" (error %d)!", inOutputPath, errno);
                     errno = 0;
